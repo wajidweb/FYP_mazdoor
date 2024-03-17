@@ -6,6 +6,9 @@ import Home from "./pages/Home";
 import Layout from "./components/Layout/Layout";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
+import MazdoorDashboard from "./pages/MazdoorDashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
+import ContractorDashboard from "./pages/ContractorDashboard";
 
 export default function App() {
   return (
@@ -23,16 +26,19 @@ export default function App() {
            <Route index element={<SignUp />} />
            <Route path="signup" element={<SignUp />} />
            <Route path="login" element={<Login />} />
+           <Route path="dashboard" element={<MazdoorDashboard />} />
         </Route>
         <Route path="/Employer" element={<Layout />}>
             <Route index element={<SignUp />} />
             <Route path="signup" element={<SignUp />} />  
             <Route path="login" element={<Login />} />
+            <Route path="dashboard" element={<EmployerDashboard />} />
         </Route>
         <Route path="/contractor" element={<Layout />}>
              <Route index element={<SignUp />} />
              <Route path="signup" element={<SignUp />} />
              <Route path="login" element={<Login />} />
+             <Route path="dashboard" element={<ContractorDashboard />} />
         </Route>
       </Routes>
     </Router>

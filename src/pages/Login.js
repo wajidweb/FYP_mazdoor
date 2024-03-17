@@ -4,15 +4,18 @@ import { Link } from "react-router-dom";
 export default function Login() {
   return (
     <div>
-      <section className="bg-no-repeat bg-cover" style={{backgroundImage: 'url("/assets/images/loginbg.jpg")'}}>
+      <section
+        className="bg-no-repeat bg-cover"
+        style={{ backgroundImage: 'url("/assets/images/loginbg.jpg")' }}
+      >
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-16 ">
           <Link
-            to='/'
+            to="/"
             className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
           >
             <img
               className="w-8 h-8 mr-2"
-              src={'/assets/images/logo.png'}
+              src={"/assets/images/logo.png"}
               alt="logo"
             />
             <span className="text-pink-600 font-bold">LaborEase</span>
@@ -39,7 +42,7 @@ export default function Login() {
                     required=""
                   />
                 </div>
-                
+
                 <div>
                   <label
                     htmlFor="password"
@@ -56,14 +59,16 @@ export default function Login() {
                     required=""
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
-                >
-                  Login
-                </button>
+                <Link to="/mazdoor/dashboard" className="my-2">
+                  <button
+                    type="submit"
+                    className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4 text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
+                  >
+                    Login
+                  </button>
+                </Link>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don't have an Account? 
+                  Don't have an Account?
                   <Link
                     to="/signup"
                     className=" ms-1 font-medium text-primary-600 hover:underline dark:text-primary-500"

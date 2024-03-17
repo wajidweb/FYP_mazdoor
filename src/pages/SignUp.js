@@ -113,12 +113,14 @@ export default function SignUp() {
                     </label>
                   </div>
                 </div>
+                <Link to='/mazdoor/dashboard'>
                 <button
                   type="submit"
-                  className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
+                  className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4  text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
                 >
                   Create account
                 </button>
+                </Link>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Already have an account?{" "}
                   <Link
