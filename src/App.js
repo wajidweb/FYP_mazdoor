@@ -20,14 +20,17 @@ export default function App() {
         </Route>
 
         <Route path="/mazdoor" element={<Layout />}>
+           <Route index element={<SignUp />} />
            <Route path="signup" element={<SignUp />} />
            <Route path="login" element={<Login />} />
         </Route>
         <Route path="/Employer" element={<Layout />}>
+            <Route index element={<SignUp />} />
             <Route path="signup" element={<SignUp />} />  
             <Route path="login" element={<Login />} />
         </Route>
         <Route path="/contractor" element={<Layout />}>
+             <Route index element={<SignUp />} />
              <Route path="signup" element={<SignUp />} />
              <Route path="login" element={<Login />} />
         </Route>
