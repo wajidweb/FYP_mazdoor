@@ -106,18 +106,22 @@ export default function Header() {
           </ul>
         </div>
         <div className="flex items-center space-x-3 md:order-2 mx-1">
+          <Link to='/signup'>
           <button
             type="button"
             className="text-white bg-pink-300 hover:bg-pink-400 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-md text-sm px-4 py-2 text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-200"
           >
             Sign Up
           </button>
+          </Link>
+          <Link to='/login'>
           <button
             type="button"
             className="text-white bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-md text-sm px-4 py-2 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-200"
           >
             Login
           </button>
+          </Link>
         </div>
       </div>
     </nav>
