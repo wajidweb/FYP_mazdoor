@@ -2,14 +2,20 @@ import { React, useState } from "react";
 import { GrUserWorker } from "react-icons/gr";
 import { BsBuildings } from "react-icons/bs";
 import { TbUsersGroup } from "react-icons/tb";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const {pathname} = location;
+  const firstPathName = pathname.split('/')[1];
 
+ console.log(firstPathName)
+ 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
 
   return (
     <nav className="bg-white  w-full z-20 border-b shadow-sm py-2">
@@ -72,10 +78,10 @@ export default function Header() {
             <li>
               <Link
                 to="/mazdoor"
-                className="block py-2 px-3 text-black rounded hover:bg-pink-300 md:bg-transparent md:hover:text-pink-300 md:p-0 md:dark:hover:text-pink-600   dark:hover:text-white md:dark:hover:bg-transparent "
+                className={`block py-2 px-3 text-black rounded hover:bg-pink-300 md:bg-transparent md:hover:text-pink-300 md:p-0 md:dark:hover:text-pink-600   dark:hover:text-white md:dark:hover:bg-transparent  ${firstPathName == 'mazdoor'? "text-pink-500" : ''} `}
                 aria-current="page"
               >
-                <div className="flex flex-col justify-center items-center">
+                <div className='flex flex-col justify-center items-center'>
                   <GrUserWorker />
                   <span>Mazdoor</span>
                 </div>
@@ -84,7 +90,7 @@ export default function Header() {
             <li>
               <Link
                to='/employer'
-                className="block py-2 px-3 text-black rounded  hover:bg-pink-300 md:bg-transparent md:hover:text-pink-300 md:p-0 md:dark:hover:text-pink-600    dark:hover:text-white md:dark:hover:bg-transparent "
+                className={`block py-2 px-3 text-black rounded  hover:bg-pink-300 md:bg-transparent md:hover:text-pink-300 md:p-0 md:dark:hover:text-pink-600    dark:hover:text-white md:dark:hover:bg-transparent ${firstPathName == 'employer'? "text-pink-500" : ''} `}
               >
                 <div className="flex flex-col justify-center items-center">
                   <BsBuildings />
@@ -95,7 +101,7 @@ export default function Header() {
             <li>
               <Link
                 to='/contractor'
-                className="block py-2 px-3 text-black rounded hover:bg-pink-300 md:bg-transparent md:hover:text-pink-300 md:p-0 md:dark:hover:text-pink-600    dark:hover:text-white md:dark:hover:bg-transparent "
+                className={`block py-2 px-3 text-black rounded hover:bg-pink-300 md:bg-transparent md:hover:text-pink-300 md:p-0 md:dark:hover:text-pink-600    dark:hover:text-white md:dark:hover:bg-transparent ${firstPathName == 'contractor'? "text-pink-500" : ''}`}
               >
                 <div className="flex flex-col justify-center items-center">
                   <TbUsersGroup />
