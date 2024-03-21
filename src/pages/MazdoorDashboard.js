@@ -2,6 +2,10 @@ import { React, useState } from "react";
 import Sidebar from "../components/mazdoor_dashboard_data/Sidebar";
 import MazdoorProfile from "../components/mazdoor_dashboard_data/MazdoorProfile";
 import Dashboard from "../components/mazdoor_dashboard_data/Dashboard";
+import Jobs from "../components/mazdoor_dashboard_data/Jobs";
+import AppliedJobs from "../components/mazdoor_dashboard_data/AppliedJobs";
+import ChatHubMazdoor from "../components/mazdoor_dashboard_data/ChatHubMazdoor";
+import mazdoorSidebarData from "../components/utils/mazdoorSidebarData";
 
 export default function MazdoorDashboard() {
   const [isOpen, setIsOpen] = useState(true);
@@ -11,7 +15,25 @@ export default function MazdoorDashboard() {
     setIsOpen(!isOpen);
   };
 
-  
+  const renderComponent = () => {
+    console.log("data ", mazdoorSidebarData);
+    switch (selectedOption) {
+      case mazdoorSidebarData[0].text:
+        return <MazdoorProfile />;
+
+      case mazdoorSidebarData[1].text:
+        return <Dashboard />;
+      case mazdoorSidebarData[2].text:
+        return <Jobs />;
+      case mazdoorSidebarData[3].text:
+        return <AppliedJobs />;
+      case mazdoorSidebarData[4].text:
+        return <ChatHubMazdoor />;
+
+      default:
+        return <MazdoorProfile />;
+    }
+  };
 
   return (
     <div className="py-8 ">
@@ -34,10 +56,10 @@ export default function MazdoorDashboard() {
         </svg>
       </button>
 
-      <div className="flex border-2" >
-        <Sidebar isOpen={isOpen}/>
-        <div className='flex-grow h-screen  rounded-sm' >
-         <Dashboard />
+      <div className="flex border-2">
+        <Sidebar isOpen={isOpen} setSelectedOption={setSelectedOption} />
+        <div className="flex-grow h-screen  rounded-sm">
+          {renderComponent()}
         </div>
       </div>
     </div>
