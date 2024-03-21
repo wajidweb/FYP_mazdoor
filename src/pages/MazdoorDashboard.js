@@ -1,6 +1,7 @@
 import { React, useState } from "react";
 import Sidebar from "../components/mazdoor_dashboard_data/Sidebar";
 import MazdoorProfile from "../components/mazdoor_dashboard_data/MazdoorProfile";
+import Dashboard from "../components/mazdoor_dashboard_data/Dashboard";
 
 export default function MazdoorDashboard() {
   const [isOpen, setIsOpen] = useState(true);
@@ -36,7 +37,7 @@ export default function MazdoorDashboard() {
       <div className="flex border-2" >
         <Sidebar isOpen={isOpen}/>
         <div className='flex-grow h-screen  rounded-sm' >
-         <MazdoorProfile />
+         <Dashboard />
         </div>
       </div>
     </div>
