@@ -121,7 +121,7 @@ export default function MazdoorProfile() {
           </div>
           <div className="relative z-0 w-full mb-5 group">
             <label
-              for="address"
+              htmlFor="address"
               className="block mb-1 text-sm font-medium text-gray-900 dark:text-black"
             >
               Address
@@ -135,7 +135,7 @@ export default function MazdoorProfile() {
           </div>
           <div className="relative z-0 w-full mb-5 group">
             <label
-              for="professionalDescription"
+              htmlFor="professionalDescription"
               className="block mb-1 text-sm font-medium text-gray-900 dark:text-black"
             >
               Professional Description
@@ -143,7 +143,7 @@ export default function MazdoorProfile() {
             <textarea
               id="professionalDescription"
               rows="3"
-              class="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Description..."
             ></textarea>
           </div>

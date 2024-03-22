@@ -16,7 +16,6 @@ export default function MazdoorDashboard() {
   };
 
   const renderComponent = () => {
-    console.log("data ", mazdoorSidebarData);
     switch (selectedOption) {
       case mazdoorSidebarData[0].text:
         return <MazdoorProfile />;
