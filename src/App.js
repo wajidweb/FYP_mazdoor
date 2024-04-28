@@ -29,7 +29,7 @@ export default function App() {
            <Route path="dashboard" element={<MazdoorDashboard />} />
            
         </Route>
-        <Route path="/Employer" element={<Layout />}>
+        <Route path="/employer" element={<Layout />}>
             <Route index element={<SignUp />} />
             <Route path="signup" element={<SignUp />} />  
             <Route path="login" element={<Login />} />
