@@ -1,7 +1,6 @@
 import React from "react";
-import { FaPlusSquare } from "react-icons/fa";
 
-export default function Jobs({ setJobPage }) {
+export default function Jobs() {
   const data = [
     {
       jobImage:
@@ -55,8 +54,8 @@ export default function Jobs({ setJobPage }) {
 
   return (
     <div className="w-full h-screen bg-slate-200">
-      <section className="w-full py-7 bg-slate-700">
-        <div className="w-11/12 flex justify-center items-center">
+      <section className="w-full flex justify-center items-center py-7 bg-slate-700">
+        <div className="w-11/12">
           <form className="max-w-md mx-auto">
             <label
               htmlFor="default-search"
@@ -97,11 +96,6 @@ export default function Jobs({ setJobPage }) {
               </button>
             </div>
           </form>
-          <div>
-            <button onClick={()=> setJobPage(false)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded flex justify-between items-center">
-            <FaPlusSquare /> <span  className="ms-1"> Create a new Job Gig</span>
-            </button>
-          </div>
         </div>
       </section>
 
@@ -129,7 +123,7 @@ export default function Jobs({ setJobPage }) {
                     {val.jobDescription}
                   </p>
                 </div>
-                {/* <div className="w-full flex justify-end items-end py-3 px-3">
+                <div className="w-full flex justify-end items-end py-3 px-3">
                   <button
                     type="button"
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -151,7 +145,7 @@ export default function Jobs({ setJobPage }) {
                       />
                     </svg>
                   </button>
-                </div> */}
+                </div>
               </div>
             );
           })}

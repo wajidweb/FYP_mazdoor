@@ -10,6 +10,7 @@ import MazdoorDashboard from "./pages/MazdoorDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import ContractorDashboard from "./pages/ContractorDashboard";
 
+
 export default function App() {
   return (
     <Provider store={store}>

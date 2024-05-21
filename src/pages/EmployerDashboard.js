@@ -5,11 +5,12 @@ import Jobs from "../components/employer_dashboard_data/Jobs";
 import ChatHubMazdoor from "../components/employer_dashboard_data/ChatHubMazdoor";
 import employerSidebarData from "../components/utils/employerSidebarData";
 import EmployerProfile from "../components/employer_dashboard_data/EmployerProfile";
+import CreateNewJob from "../components/employer_dashboard_data/CreateNewJob";
 
 export default function EmployerDashboard() {
   const [isOpen, setIsOpen] = useState(true);
   const [selectedOption, setSelectedOption] = useState("");
-
+  const [jobPage, setJobPage] = useState(true);
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
@@ -22,7 +23,12 @@ export default function EmployerDashboard() {
       case employerSidebarData[1].text:
         return <Dashboard />;
       case employerSidebarData[2].text:
-        return <Jobs />;
+        if(jobPage){
+           return <Jobs setJobPage={setJobPage} />;
+        }
+        else {
+          return <CreateNewJob setJobPage={setJobPage} />;
+        }
 
       case employerSidebarData[3].text:
         return <ChatHubMazdoor />;

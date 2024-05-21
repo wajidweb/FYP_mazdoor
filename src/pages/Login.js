@@ -1,7 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signIn } from "../store/reducers/authSlice";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
+
+  const formValidation = () => {
+    let valid = true;
+    const newErrors = { ...errors };
+
+    if (!email || email?.trim() === "") {
+      newErrors.email = "Please enter email here";
+      valid = false;
+    } else {
+      newErrors.email = "";
+    }
+
+    if (!password || password?.trim() === "") {
+      newErrors.password = "Please enter your password";
+      valid = false;
+    } else {
+      newErrors.password = "";
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    if (formValidation()) {
+      dispatch(signIn({ email, password }));
+    }
+  };
+
   return (
     <div>
       <section
@@ -25,23 +67,29 @@ export default function Login() {
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Login Your Account
               </h1>
-              <form className="space-y-4 md:space-y-6" action="#">
+              <form className="space-y-4 md:space-y-6" onSubmit={handleSignIn}>
                 <div>
                   <label
-                    htmlFor="cnic"
+                    htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Enter CNIC
+                    Enter Email
                   </label>
                   <input
-                    type="text"
-                    name="cnic"
-                    id="cnic"
+                    type="email"
+                    name="email"
+                    id="email"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="12345-6789191-0"
+                    placeholder="something@gmail.com"
                     required=""
+                    onChange={(e)=> setEmail(e.target.value)}
                   />
                 </div>
+                {
+                  errors.email && (
+                    <div className='text-red-400'>{errors.email}</div>
+                  )
+                }
 
                 <div>
                   <label
@@ -57,16 +105,23 @@ export default function Login() {
                     placeholder="••••••••"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
+                    onChange={(e)=> setPassword(e.target.value)}
                   />
                 </div>
-                <Link to="/employer/dashboard" className="my-2">
+                {
+                  errors.password && (
+                    <div className='text-red-400'>{errors.password}</div>
+                  )
+                }
+                {/* <Link to="/employer/dashboard" className="my-2"> */}
                   <button
+                  disabled={loading}
                     type="submit"
                     className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4 text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
                   >
                     Login
                   </button>
-                </Link>
+                {/* </Link> */}
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Don't have an Account?
                   <Link
@@ -77,6 +132,7 @@ export default function Login() {
                   </Link>
                 </p>
               </form>
+              {error && <p className="text-yellow-500">{error}</p>}
             </div>
           </div>
         </div>
@@ -84,3 +140,44 @@ export default function Login() {
     </div>
   );
 }
+
+// // src/components/SignIn.js
+// import React, { useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { signIn } from "../store/reducers/authSlice";
+
+// const Login = () => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const dispatch = useDispatch();
+//   const { loading, error } = useSelector((state) => state.auth);
+
+//   const handleSignIn = (e) => {
+//     e.preventDefault();
+//     dispatch(signIn({ email, password }));
+//   };
+
+//   return (
+//     <div>
+//       <h2>Sign In</h2>
+//       <form onSubmit={handleSignIn}>
+//         <input
+//           type="email"
+//           placeholder="Email"
+//           value={email}
+//           onChange={(e) => setEmail(e.target.value)}
+//         />
+//         <input
+//           type="password"
+//           placeholder="Password"
+//           value={password}
+//           onChange={(e) => setPassword(e.target.value)}
+//         />
+//         <button type="submit" disabled={loading}>Sign In</button>
+//       </form>
+//       {error && <p>{error}</p>}
+//     </div>
+//   );
+// };
+
+// export default Login;
