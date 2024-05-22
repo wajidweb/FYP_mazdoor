@@ -1,8 +1,8 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { signUp } from "../store/reducers/authSlice";
-
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   // const [formData, setFormData] = useState({
@@ -15,15 +15,30 @@ export default function SignUp() {
   const [errors, setErrors] = useState({
     email: "",
     password: "",
+    name: "",
+    cnic: "",
   });
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [name, setName] = useState("");
+  const [cnic, setCnic] = useState("");
+  const [userType, setUserType] = useState("mazdoor");
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { user, loading, error } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
- 
+  useEffect(() => {
+    if (user) {
+      if (user?.userType === "mazdoor") {
+        navigate("/mazdoor/dashboard");
+      } else if (user?.userType === "employer") {
+        navigate("/employer/dashboard");
+      } else if (user.userType === "contractor") {
+        navigate("/contractor/dashboard");
+      }
+    }
+  }, [user, navigate]);
 
   // const handleFormInputChange = (e) => {
   //   const { name, value } = e.target;
@@ -38,19 +53,40 @@ export default function SignUp() {
   //   }));
   // };
 
-
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname.includes("mazdoor")) {
+      setUserType("mazdoor");
+    } else if (location.pathname.includes("employer")) {
+      setUserType("employer");
+    } else if (location.pathname.includes("contractor")) {
+      setUserType("contractor");
+    }
+  }, [location.pathname]);
 
   const formValidation = () => {
     let valid = true;
     const newErrors = { ...errors };
 
+    if (!name || name?.trim() === "") {
+      newErrors.name = "Please enter name here";
+      valid = false;
+    } else {
+      newErrors.name = "";
+    }
+    if (!cnic || cnic?.trim() === "") {
+      newErrors.cnic = "Please enter cnic here";
+      valid = false;
+    } else {
+      newErrors.cnic = "";
+    }
     if (!email || email?.trim() === "") {
       newErrors.email = "Please enter email here";
       valid = false;
     } else {
       newErrors.email = "";
     }
-   
+
     if (!password || password?.trim() === "") {
       newErrors.password = "Please enter your password";
       valid = false;
@@ -62,14 +98,14 @@ export default function SignUp() {
     return valid;
   };
 
-  const handleSubmit = (e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if(formValidation()){   
-      dispatch(signUp({ email, password }));
+    if (formValidation()) {
+      dispatch(
+        signUp({ email, password, additionalData: { name, cnic, userType } })
+      );
     }
-
-    
-  }
+  };
 
   return (
     <div>
@@ -94,8 +130,63 @@ export default function SignUp() {
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Create account (Sign Up)
               </h1>
-              <form className="space-y-4 md:space-y-6" action="#" onSubmit={handleSubmit}>
-                
+              <form
+                className="space-y-4 md:space-y-6"
+                action="#"
+                onSubmit={handleSubmit}
+              >
+                <div className="w-full ">
+                  <select
+                    className="w-full py-1 bg-gray-300 font-bold rounded"
+                    value={userType}
+                    onChange={(e) => setUserType(e.target.value)}
+                  >
+                    <option value="mazdoor">Mazdoor</option>
+                    <option value="employer">Employer</option>
+                    <option value="contractor">Contractor</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Name
+                  </label>
+                  <input
+                    onChange={(e) => setName(e.target.value)}
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="wajid ...."
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required=""
+                  />
+                </div>
+                {errors.name && (
+                  <div className="text-red-400">{errors.name}</div>
+                )}
+                <div>
+                  <label
+                    htmlFor="cnic"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    CNIC (without dashes)
+                  </label>
+                  <input
+                    onChange={(e) => setCnic(e.target.value)}
+                    type="text"
+                    name="cnic"
+                    id="cnic"
+                    placeholder="12345678910112"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required=""
+                  />
+                </div>
+                {errors.cnic && (
+                  <div className="text-red-400">{errors.cnic}</div>
+                )}
                 <div>
                   <label
                     htmlFor="email"
@@ -104,18 +195,18 @@ export default function SignUp() {
                     Email
                   </label>
                   <input
-                    onChange={(e)=> setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     type="email"
                     name="email"
                     id="password"
-                    placeholder="••••••••"
+                    placeholder="something@gmail.com"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
                   />
                 </div>
                 {errors.email && (
-                        <div className='text-red-400'>{errors.email}</div>
-                      )}
+                  <div className="text-red-400">{errors.email}</div>
+                )}
                 <div>
                   <label
                     htmlFor="password"
@@ -124,7 +215,7 @@ export default function SignUp() {
                     Password
                   </label>
                   <input
-                    onChange={(e)=> setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     type="password"
                     name="password"
                     id="password"
@@ -134,16 +225,16 @@ export default function SignUp() {
                   />
                 </div>
                 {errors.password && (
-                        <div className='text-red-400'>{errors.password}</div>
-                      )}
-              
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4  text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
-                  >
-                    Create account
-                  </button>
+                  <div className="text-red-400">{errors.password}</div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full text-white bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-4  text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
+                >
+                  Create account
+                </button>
                 {/* </Link> */}
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Already have an account?{" "}
@@ -163,8 +254,6 @@ export default function SignUp() {
     </div>
   );
 }
-
-
 
 // // src/components/SignUp.js
 // import React, { useState } from "react";

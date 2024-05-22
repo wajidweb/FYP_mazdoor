@@ -9,9 +9,12 @@ import Login from "./pages/Login";
 import MazdoorDashboard from "./pages/MazdoorDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import ContractorDashboard from "./pages/ContractorDashboard";
-
+import { useSelector, useDispatch } from "react-redux";
 
 export default function App() {
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+    
   return (
     <Provider store={store}>
 
