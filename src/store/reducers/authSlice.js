@@ -50,12 +50,15 @@ export const signIn = createAsyncThunk(
   "auth/signIn",
   async ({ email, password }, thunkAPI) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      return userCredential.user;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = { uid: user.uid, ...userDoc.data() };
+
+      storeUserDataInLocalStorage(userData);
+
+      return userData;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -73,7 +76,7 @@ export const logOut = createAsyncThunk("auth/logOut", async (_, thunkAPI) => {
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: getUserDataFromLocalStorage(), // Initialize user from local storage
+    user: JSON.parse(localStorage.getItem("user")) || null, // Initialize user from local storage
     loading: false,
     error: null,
   },

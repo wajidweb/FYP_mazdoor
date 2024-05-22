@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../store/reducers/authSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,7 +16,7 @@ export default function Login() {
     password: "",
   });
 
-  const dispatch = useDispatch();
+
   const { loading, error } = useSelector((state) => state.auth);
 
   const formValidation = () => {
@@ -37,12 +41,27 @@ export default function Login() {
     return valid;
   };
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
     if (formValidation()) {
-      dispatch(signIn({ email, password }));
+      try {
+        await dispatch(signIn({ email, password }));
+      } catch (error) {
+        setErrors(error.message);
+      }
     }
   };
+
+  if (user) {
+    const userType = user.userType;
+    if (userType === "mazdoor") {
+      navigate("/mazdoor/dashboard");
+    } else if (userType === "employer") {
+      navigate("/employer/dashboard");
+    } else if (userType === "contractor") {
+      navigate("/contractor/dashboard");
+    }
+  }
 
   return (
     <div>
