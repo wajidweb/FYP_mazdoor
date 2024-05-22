@@ -1,5 +1,6 @@
 // src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -25,49 +26,81 @@ export const signUp = createAsyncThunk(
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
+
+      // Generate UUIDs for userId, laborId, employerId, and contractorId
+      const userId = uuidv4();
+      const laborId = uuidv4();
+      const employerId = uuidv4();
+      const contractorId = uuidv4();
+
       // Extract additional data
       const { name, cnic, userType } = additionalData;
 
-      // Store user data in the "users" collection
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        name: name,
-        cnic: cnic,
-        userType: userType,
-        // Add any other common user data here
-      });
+      // Initialize specificId
+      let specificId = null;
 
-      // Store additional user data in the appropriate collection based on userType
+      // Store user data in the appropriate collection based on userType
       if (userType === "mazdoor") {
-        await setDoc(doc(db, "mazdoors", user.uid), {
+        specificId = laborId;
+        // Store labor-specific data in "labors" collection
+        await setDoc(doc(db, "mazdoors", laborId), {
           email: user.email,
           name: name,
           cnic: cnic,
           userType: userType,
+          userId: userId, // Store userId for reference
+          laborId: laborId, // Store laborId in "labors" collection
           // Add any other labor-specific data here
         });
       } else if (userType === "employer") {
-        await setDoc(doc(db, "employers", user.uid), {
+        specificId = employerId;
+        // Store employer-specific data in "employers" collection
+        await setDoc(doc(db, "employers", employerId), {
           email: user.email,
           name: name,
           cnic: cnic,
           userType: userType,
+          userId: userId, // Store userId for reference
+          employerId: employerId, // Store employerId in "employers" collection
           // Add any other employer-specific data here
         });
       } else if (userType === "contractor") {
-        await setDoc(doc(db, "contractors", user.uid), {
+        specificId = contractorId;
+        // Store contractor-specific data in "contractors" collection
+        await setDoc(doc(db, "contractors", contractorId), {
           email: user.email,
           name: name,
           cnic: cnic,
           userType: userType,
+          userId: userId, // Store userId for reference
+          contractorId: contractorId, // Store contractorId in "contractors" collection
           // Add any other contractor-specific data here
         });
       }
 
+      // Store user data in "users" collection with specificId labeled appropriately
+      const userDocData = {
+        email: user.email,
+        name: name,
+        cnic: cnic,
+        userType: userType,
+        userId: userId, // Store userId
+        // Add any other common user data here
+      };
+      
+      if (userType === "mazdoor") {
+        userDocData.laborId = specificId;
+      } else if (userType === "employer") {
+        userDocData.employerId = specificId;
+      } else if (userType === "contractor") {
+        userDocData.contractorId = specificId;
+      }
+
+      await setDoc(doc(db, "users", userId), userDocData);
+
       // Fetch the user data to include in the Redux state
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userData = { uid: user.uid, ...userDoc.data() };
+      const userDoc = await getDoc(doc(db, "users", userId));
+      const userData = { uid: userId, ...userDoc.data() };
 
       // Store user data in local storage
       storeUserDataInLocalStorage(userData);
@@ -79,13 +112,18 @@ export const signUp = createAsyncThunk(
   }
 );
 
+
 export const signIn = createAsyncThunk(
   "auth/signIn",
   async ({ email, password }, thunkAPI) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-      
+
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userData = { uid: user.uid, ...userDoc.data() };
 
