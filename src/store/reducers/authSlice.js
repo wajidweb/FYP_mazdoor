@@ -26,11 +26,44 @@ export const signUp = createAsyncThunk(
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
-      // Store additional user data in Firestore
+      // Extract additional data
+      const { name, cnic, userType } = additionalData;
+
+      // Store user data in the "users" collection
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
-        ...additionalData,
+        name: name,
+        cnic: cnic,
+        userType: userType,
+        // Add any other common user data here
       });
+
+      // Store additional user data in the appropriate collection based on userType
+      if (userType === "mazdoor") {
+        await setDoc(doc(db, "mazdoors", user.uid), {
+          email: user.email,
+          name: name,
+          cnic: cnic,
+          userType: userType,
+          // Add any other labor-specific data here
+        });
+      } else if (userType === "employer") {
+        await setDoc(doc(db, "employers", user.uid), {
+          email: user.email,
+          name: name,
+          cnic: cnic,
+          userType: userType,
+          // Add any other employer-specific data here
+        });
+      } else if (userType === "contractor") {
+        await setDoc(doc(db, "contractors", user.uid), {
+          email: user.email,
+          name: name,
+          cnic: cnic,
+          userType: userType,
+          // Add any other contractor-specific data here
+        });
+      }
 
       // Fetch the user data to include in the Redux state
       const userDoc = await getDoc(doc(db, "users", user.uid));
