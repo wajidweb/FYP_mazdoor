@@ -7,7 +7,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth, db } from "../../services/firebase";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc , collection , where, query, getDocs } from "firebase/firestore";
 
 // Action to store user data in local storage
 const storeUserDataInLocalStorage = (userData) => {
@@ -117,14 +117,29 @@ export const signIn = createAsyncThunk(
   "auth/signIn",
   async ({ email, password }, thunkAPI) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      // Sign in the user
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      // Query users collection by email to get userId
+      const usersCollection = collection(db, "users");
+      const emailQuery = query(usersCollection, where("email", "==", email));
+      const emailQuerySnapshot = await getDocs(emailQuery);
+
+      if (emailQuerySnapshot.empty) {
+        throw new Error("No user found with this email");
+      }
+
+      let userId;
+      emailQuerySnapshot.forEach(doc => {
+        userId = doc.data().userId;
+      });
+
+      // Fetch user data using userId
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (!userDoc.exists()) {
+        throw new Error("User data does not exist in the database");
+      }
       const userData = { uid: user.uid, ...userDoc.data() };
 
       storeUserDataInLocalStorage(userData);
