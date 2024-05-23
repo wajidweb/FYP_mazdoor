@@ -1,6 +1,6 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 
-export default function MazdoorProfile() {
+export default function MazdoorProfile({ user, mazdoor }) {
   const [image, setImage] = useState(null);
 
   const handleImageChange = (e) => {
@@ -15,7 +15,7 @@ export default function MazdoorProfile() {
       reader.readAsDataURL(file);
     }
   };
-
+  console.log("mazdoor", mazdoor);
   const [formData, setFormData] = useState({
     name: "",
     profession: "",
@@ -24,6 +24,21 @@ export default function MazdoorProfile() {
     address: "",
     description: "",
   });
+
+  // Update formData state when mazdoor data is available
+  useEffect(() => {
+    if (mazdoor) {
+      setFormData({
+        name: mazdoor.name || "",
+        profession: mazdoor.profession || "",
+        contactNumber: mazdoor.contactNumber || "",
+        city: mazdoor.city || "",
+        address: mazdoor.address || "",
+        description: mazdoor.description || "",
+      });
+    }
+  }, [mazdoor]);
+
   const [errors, setErrors] = useState({
     name: "",
     profession: "",
@@ -99,8 +114,6 @@ export default function MazdoorProfile() {
     }
   };
 
-  console.log("formdata is", formData);
-
   return (
     <div className="w-full bg-white">
       <div className="bg-gray-50 dark:bg-gray-700 px-5 py-5">
@@ -173,7 +186,9 @@ export default function MazdoorProfile() {
               >
                 Profession
               </label>
-              {errors.profession && <div className="text-red-400">{errors.profession}</div>}
+              {errors.profession && (
+                <div className="text-red-400">{errors.profession}</div>
+              )}
             </div>
           </div>
           <div className="grid md:grid-cols-2 md:gap-6">
@@ -195,7 +210,9 @@ export default function MazdoorProfile() {
               >
                 Phone number (123-456-7890)
               </label>
-              {errors.contactNumber && <div className="text-red-400">{errors.contactNumber}</div>}
+              {errors.contactNumber && (
+                <div className="text-red-400">{errors.contactNumber}</div>
+              )}
             </div>
             <div className="relative z-0 w-full mb-5 group">
               <input
@@ -225,6 +242,7 @@ export default function MazdoorProfile() {
               Address
             </label>
             <textarea
+              value={formData?.address || ""}
               onChange={handleFormInputChange}
               name="address"
               id="address"
@@ -232,7 +250,9 @@ export default function MazdoorProfile() {
               className="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Enter your address..."
             ></textarea>
-              {errors.address && <div className="text-red-400">{errors.address}</div>}
+            {errors.address && (
+              <div className="text-red-400">{errors.address}</div>
+            )}
           </div>
           <div className="relative z-0 w-full mb-5 group">
             <label
@@ -242,6 +262,7 @@ export default function MazdoorProfile() {
               Professional Description
             </label>
             <textarea
+              value={formData?.description || ""}
               name="description"
               onChange={handleFormInputChange}
               id="professionalDescription"
@@ -249,7 +270,9 @@ export default function MazdoorProfile() {
               className="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Description..."
             ></textarea>
-              {errors.description && <div className="text-red-400">{errors.description}</div>}
+            {errors.description && (
+              <div className="text-red-400">{errors.description}</div>
+            )}
           </div>
           <div className="flex justify-center items-center w-full">
             <button

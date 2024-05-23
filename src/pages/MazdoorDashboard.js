@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState , useEffect} from "react";
 import Sidebar from "../components/mazdoor_dashboard_data/Sidebar";
 import MazdoorProfile from "../components/mazdoor_dashboard_data/MazdoorProfile";
 import Dashboard from "../components/mazdoor_dashboard_data/Dashboard";
@@ -6,19 +6,33 @@ import Jobs from "../components/mazdoor_dashboard_data/Jobs";
 import AppliedJobs from "../components/mazdoor_dashboard_data/AppliedJobs";
 import ChatHubMazdoor from "../components/mazdoor_dashboard_data/ChatHubMazdoor";
 import mazdoorSidebarData from "../components/utils/mazdoorSidebarData";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { fetchMazdoorById } from '../store/reducers/mazdoorSlice';
+
+
 
 export default function MazdoorDashboard() {
+  const dispatch = useDispatch();
+  const mazdoor = useSelector((state)=> state.mazdoor.mazdoor);
+
   const [isOpen, setIsOpen] = useState(true);
   const [selectedOption, setSelectedOption] = useState("");
+  const user = useSelector((state)=> state.auth.user);
+
+  useEffect(() => {
+      dispatch(fetchMazdoorById(user?.laborId));
+  }, [user, dispatch]);
+
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-
+ 
   const renderComponent = () => {
     switch (selectedOption) {
       case mazdoorSidebarData[0].text:
-        return <MazdoorProfile />;
+        return <MazdoorProfile user={user} mazdoor={mazdoor} />;
 
       case mazdoorSidebarData[1].text:
         return <Dashboard />;
@@ -30,7 +44,7 @@ export default function MazdoorDashboard() {
         return <ChatHubMazdoor />;
 
       default:
-        return <MazdoorProfile />;
+        return <MazdoorProfile user={user} mazdoor={mazdoor}  />;
     }
   };
 
