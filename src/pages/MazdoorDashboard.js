@@ -36,7 +36,7 @@ export default function MazdoorDashboard() {
         return <MazdoorProfile user={user} mazdoor={mazdoor} />;
 
       case mazdoorSidebarData[1].text:
-        return <Dashboard />;
+        return <Dashboard mazdoor={mazdoor} />;
       case mazdoorSidebarData[2].text:
         return <Jobs />;
       case mazdoorSidebarData[3].text:
