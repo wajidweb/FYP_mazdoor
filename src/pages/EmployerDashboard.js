@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import Sidebar from "../components/employer_dashboard_data/Sidebar";
 import Dashboard from "../components/employer_dashboard_data/Dashboard";
 import Jobs from "../components/employer_dashboard_data/Jobs";
@@ -6,6 +6,8 @@ import ChatHubMazdoor from "../components/employer_dashboard_data/ChatHubMazdoor
 import employerSidebarData from "../components/utils/employerSidebarData";
 import EmployerProfile from "../components/employer_dashboard_data/EmployerProfile";
 import CreateNewJob from "../components/employer_dashboard_data/CreateNewJob";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEmployerById } from "../store/reducers/employerSlice";
 
 export default function EmployerDashboard() {
   const [isOpen, setIsOpen] = useState(true);
@@ -15,18 +17,26 @@ export default function EmployerDashboard() {
     setIsOpen(!isOpen);
   };
 
+  const dispatch = useDispatch();
+  const employer = useSelector((state) => state.employer.employer);
+  const user = useSelector((state) => state.auth.user);
+  useEffect(() => {
+    if (user?.employerId) {
+      dispatch(fetchEmployerById(user?.employerId));
+    }
+  }, [dispatch, user]);
+
   const renderComponent = () => {
     switch (selectedOption) {
       case employerSidebarData[0].text:
-        return <EmployerProfile />;
+        return <EmployerProfile user={user} employer={employer} />;
 
       case employerSidebarData[1].text:
         return <Dashboard />;
       case employerSidebarData[2].text:
-        if(jobPage){
-           return <Jobs setJobPage={setJobPage} />;
-        }
-        else {
+        if (jobPage) {
+          return <Jobs setJobPage={setJobPage} />;
+        } else {
           return <CreateNewJob setJobPage={setJobPage} />;
         }
 
@@ -34,7 +44,7 @@ export default function EmployerDashboard() {
         return <ChatHubMazdoor />;
 
       default:
-        return <EmployerProfile />;
+        return <EmployerProfile user={user} employer={employer} />;
     }
   };
 
