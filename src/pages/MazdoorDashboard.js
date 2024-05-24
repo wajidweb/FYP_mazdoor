@@ -7,7 +7,6 @@ import AppliedJobs from "../components/mazdoor_dashboard_data/AppliedJobs";
 import ChatHubMazdoor from "../components/mazdoor_dashboard_data/ChatHubMazdoor";
 import mazdoorSidebarData from "../components/utils/mazdoorSidebarData";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { fetchMazdoorById } from '../store/reducers/mazdoorSlice';
 
 
@@ -21,8 +20,10 @@ export default function MazdoorDashboard() {
   const user = useSelector((state)=> state.auth.user);
 
   useEffect(() => {
-      dispatch(fetchMazdoorById(user?.laborId));
-  }, [user, dispatch]);
+    if (user?.laborId) {
+      dispatch(fetchMazdoorById(user.laborId));
+    }
+  }, [dispatch, user]);
 
 
   const toggleSidebar = () => {
@@ -47,6 +48,9 @@ export default function MazdoorDashboard() {
         return <MazdoorProfile user={user} mazdoor={mazdoor}  />;
     }
   };
+
+  console.log("here user", user);
+  console.log("here mazdoor", mazdoor);
 
   return (
     <div className="py-8 ">

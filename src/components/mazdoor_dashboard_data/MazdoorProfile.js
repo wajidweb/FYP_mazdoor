@@ -1,7 +1,12 @@
 import { React, useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setMazdoor } from "../../store/reducers/mazdoorSlice";
+
 
 export default function MazdoorProfile({ user, mazdoor }) {
   const [image, setImage] = useState(null);
+  const labor = useSelector((state) => state.mazdoor.mazdoor);
+  const dispatch = useDispatch();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -15,8 +20,9 @@ export default function MazdoorProfile({ user, mazdoor }) {
       reader.readAsDataURL(file);
     }
   };
-  console.log("mazdoor", mazdoor);
+  // console.log("mazdoor", mazdoor);
   const [formData, setFormData] = useState({
+    userId: user?.userId || '',
     name: "",
     profession: "",
     contactNumber: "",
@@ -28,14 +34,15 @@ export default function MazdoorProfile({ user, mazdoor }) {
   // Update formData state when mazdoor data is available
   useEffect(() => {
     if (mazdoor) {
-      setFormData({
-        name: mazdoor.name || "",
-        profession: mazdoor.profession || "",
-        contactNumber: mazdoor.contactNumber || "",
-        city: mazdoor.city || "",
-        address: mazdoor.address || "",
-        description: mazdoor.description || "",
-      });
+      setFormData((prevData) => ({
+        ...prevData,
+        name: mazdoor.name || '',
+        profession: mazdoor.profession || '',
+        contactNumber: mazdoor.contactNumber || '',
+        city: mazdoor.city || '',
+        address: mazdoor.address || '',
+        description: mazdoor.description || '',
+      }));
     }
   }, [mazdoor]);
 
@@ -110,9 +117,15 @@ export default function MazdoorProfile({ user, mazdoor }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formValidation()) {
-      console.log(formData);
+      if (user?.laborId) {
+        dispatch(setMazdoor({ laborId: user.laborId, formData }));
+        console.log("success")
+      }
+      
     }
   };
+
+  // console.log("labor is", labor)
 
   return (
     <div className="w-full bg-white">
