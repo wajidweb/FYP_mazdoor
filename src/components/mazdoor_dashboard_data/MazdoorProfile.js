@@ -1,50 +1,55 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setMazdoor } from "../../store/reducers/mazdoorSlice";
-
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function MazdoorProfile({ user, mazdoor }) {
   const [image, setImage] = useState(null);
   const labor = useSelector((state) => state.mazdoor.mazdoor);
   const dispatch = useDispatch();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setImage(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
   // console.log("mazdoor", mazdoor);
   const [formData, setFormData] = useState({
-    userId: user?.userId || '',
+    userId: user?.userId || "",
     name: "",
     profession: "",
     contactNumber: "",
     city: "",
     address: "",
     description: "",
+    imageUrl: "",
   });
+
+  const [profileImage, setProfileImage] = useState(null);
 
   // Update formData state when mazdoor data is available
   useEffect(() => {
     if (mazdoor) {
       setFormData((prevData) => ({
         ...prevData,
-        name: mazdoor.name || '',
-        profession: mazdoor.profession || '',
-        contactNumber: mazdoor.contactNumber || '',
-        city: mazdoor.city || '',
-        address: mazdoor.address || '',
-        description: mazdoor.description || '',
+        name: mazdoor.name || "",
+        profession: mazdoor.profession || "",
+        contactNumber: mazdoor.contactNumber || "",
+        city: mazdoor.city || "",
+        address: mazdoor.address || "",
+        description: mazdoor.description || "",
+        imageUrl: mazdoor.imageUrl || "",
       }));
+      setProfileImage(mazdoor.imageUrl || "");
     }
   }, [mazdoor]);
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const storage = getStorage();
+      const storageRef = ref(storage, `mazdoor_images/${user.laborId}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setFormData((prevData) => ({ ...prevData, imageUrl: url }));
+      setProfileImage(url);
+    }
+  };
 
   const [errors, setErrors] = useState({
     name: "",
@@ -119,9 +124,8 @@ export default function MazdoorProfile({ user, mazdoor }) {
     if (formValidation()) {
       if (user?.laborId) {
         dispatch(setMazdoor({ laborId: user.laborId, formData }));
-        console.log("success")
+        console.log("success");
       }
-      
     }
   };
 
@@ -148,9 +152,9 @@ export default function MazdoorProfile({ user, mazdoor }) {
                 htmlFor="imageUpload"
                 className="block text-sm font-medium text-gray-700 cursor-pointer border-dashed border-2 border-gray-400 rounded-full w-32 h-32 flex items-center justify-center hover:border-blue-500"
               >
-                {image ? (
+                {profileImage ? (
                   <img
-                    src={image}
+                    src={profileImage}
                     alt="Uploaded"
                     className="w-full h-full object-cover rounded-full"
                   />

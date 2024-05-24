@@ -34,13 +34,14 @@ export const setMazdoor = createAsyncThunk(
     
           return { ...formData, laborId: laborDoc.data().laborId };
         } else {
-          throw new Error('Labor data does not exist');
+            throw new Error('Labor data does not exist');
         }
       } catch (error) {
         return thunkAPI.rejectWithValue(error.message);
       }
     }
   );
+  
 
 const mazdoorSlice = createSlice({
   name: "mazdoor",
