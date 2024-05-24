@@ -1,30 +1,51 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setContractor } from "../../store/reducers/contractorSlice";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-export default function ContractorProfile() {
-  const [image, setImage] = useState(null);
+export default function ContractorProfile({ user, contractor }) {
+  const [profileImage, setProfileImage] = useState(null);
+  const contractorr = useSelector((state) => state.contractor.contractor);
+  const loading = useSelector((state) => state.contractor.loading);
+  const dispatch = useDispatch();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setImage(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-
-
-  
   const [formData, setFormData] = useState({
+    userId: user?.userId || "",
     name: "",
     companyName: "",
     contactNumber: "",
     city: "",
     address: "",
+    imageUrl: "",
   });
+
+  useEffect(() => {
+    if (contractor) {
+      setFormData((prevData) => ({
+        ...prevData,
+        name: contractor.name || "",
+        companyName: contractor.companyName || "",
+        contactNumber: contractor.contactNumber || "",
+        city: contractor.city || "",
+        address: contractor.address || "",
+        imageUrl: contractor.imageUrl || "",
+      }));
+      setProfileImage(contractor.imageUrl || "");
+    }
+  }, [contractor]);
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const storage = getStorage();
+      const storageRef = ref(storage, `contractor_images/${user.contractorId}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setFormData((prevData) => ({ ...prevData, imageUrl: url }));
+      setProfileImage(url);
+    }
+  };
+
   const [errors, setErrors] = useState({
     name: "",
     companyName: "",
@@ -89,15 +110,12 @@ export default function ContractorProfile() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formValidation()) {
-      console.log("success", formData);
-    }
-    else{
-      console.log("unsuccess")
+      if (user?.contractorId) {
+        dispatch(setContractor({ contractorId: user.contractorId, formData }));
+        console.log("success");
+      }
     }
   };
-
-  console.log("formdata is", formData);
-
 
   return (
     <div className="w-full bg-white">
@@ -107,7 +125,7 @@ export default function ContractorProfile() {
 
       <section className="w-full  flex justify-center items-center  py-2">
         <form className="w-2/4 mx-auto " onSubmit={handleSubmit}>
-          <div className="flex justify-center items-center mx-auto p-6">
+        <div className="flex justify-center items-center mx-auto p-6">
             <div className="mb-4">
               <input
                 type="file"
@@ -120,9 +138,9 @@ export default function ContractorProfile() {
                 htmlFor="imageUpload"
                 className="block text-sm font-medium text-gray-700 cursor-pointer border-dashed border-2 border-gray-400 rounded-full w-32 h-32 flex items-center justify-center hover:border-blue-500"
               >
-                {image ? (
+                {profileImage ? (
                   <img
-                    src={image}
+                    src={profileImage}
                     alt="Uploaded"
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -170,7 +188,9 @@ export default function ContractorProfile() {
               >
                 Company Name (if not - then enter your name)
               </label>
-              {errors.companyName && <div className="text-red-400">{errors.companyName}</div>}
+              {errors.companyName && (
+                <div className="text-red-400">{errors.companyName}</div>
+              )}
             </div>
           </div>
           <div className="grid md:grid-cols-2 md:gap-6">
@@ -192,7 +212,9 @@ export default function ContractorProfile() {
               >
                 Phone number (123-456-7890)
               </label>
-              {errors.contactNumber && <div className="text-red-400">{errors.contactNumber}</div>}
+              {errors.contactNumber && (
+                <div className="text-red-400">{errors.contactNumber}</div>
+              )}
             </div>
             <div className="relative z-0 w-full mb-5 group">
               <input
@@ -227,18 +249,46 @@ export default function ContractorProfile() {
               className="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Enter your address..."
               value={formData?.address || ""}
-              name = "address"
+              name="address"
               onChange={handleFormInputChange}
             ></textarea>
-              {errors.address && <div className="text-red-400">{errors.address}</div>}
+            {errors.address && (
+              <div className="text-red-400">{errors.address}</div>
+            )}
           </div>
-         
+
           <div className="flex justify-center items-center w-full">
-            <button
+          <button
               type="submit"
+              disabled={loading}
               className="text-white bg-pink-600 hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-md text-sm w-full sm:w-auto px-20 py-2.5 text-center dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
             >
-              UPDATE PROFILE
+              {loading ? (
+                <div className="flex flex-row">
+                  <div role="status">
+                    <svg
+                      aria-hidden="true"
+                      className="w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                      viewBox="0 0 100 101"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"
+                      />
+                    </svg>
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                  <span className="ml-2">UPDATING </span>
+                </div>
+              ) : (
+                "UPDATE PROFILE"
+              )}
             </button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import Sidebar from "../components/contractor_dashboard_data/Sidebar";
 import Dashboard from "../components/contractor_dashboard_data/Dashboard";
 import Jobs from "../components/contractor_dashboard_data/Jobs";
@@ -6,8 +6,22 @@ import ChatHubContractor from "../components/employer_dashboard_data/ChatHubMazd
 import contractorSidebarData from "../components/utils/contractorSidebarData";
 import CreateNewJob from "../components/employer_dashboard_data/CreateNewJob";
 import ContractorProfile from "../components/contractor_dashboard_data/ContractorProfile";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchContractorById } from "../store/reducers/contractorSlice";
+
 
 export default function ContractorDashboard() {
+  const dispatch = useDispatch();
+  const user = useSelector((state)=> state.auth.user);
+  const contractor = useSelector((state)=> state.contractor.contractor);
+
+  useEffect(() => {
+    if (user?.contractorId) {
+      dispatch(fetchContractorById(user?.contractorId));
+    }
+  }, [dispatch, user]);
+
+
   const [isOpen, setIsOpen] = useState(true);
   const [selectedOption, setSelectedOption] = useState("");
   const toggleSidebar = () => {
@@ -17,7 +31,7 @@ export default function ContractorDashboard() {
   const renderComponent = () => {
     switch (selectedOption) {
       case contractorSidebarData[0].text:
-        return <ContractorProfile />;
+        return <ContractorProfile  user={user} contractor={contractor} />;
 
       case contractorSidebarData[1].text:
         return <Dashboard />;
@@ -28,7 +42,7 @@ export default function ContractorDashboard() {
         return <ChatHubContractor />;
 
       default:
-        return <ContractorProfile />;
+        return <ContractorProfile  user={user} contractor={contractor} />;
     }
   };
 
