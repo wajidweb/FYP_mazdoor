@@ -1,56 +1,24 @@
-import React from "react";
+import { React, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchJobs } from "../../store/reducers/jobSlice";
 
 export default function Jobs() {
-  const data = [
-    {
-      jobImage:
-        "https://static01.nyt.com/images/2020/09/27/world/27virus-children-takeaways/merlin_177528975_1c858c60-dc49-4a7b-b44b-5264d1ffbaf8-articleLarge.jpg?quality=75&auto=webp&disable=upscale",
-      jobTitle: "Labor for goods shifting",
-      jobLocation: "UET peshawar",
-      jobDescription:
-        "Looking for someone strong and ready to help move stuff from point A to point B. If you've got the muscles, we've got the gig",
-    },
-    {
-      jobImage:
-        "https://media.istockphoto.com/id/1146517111/photo/taj-mahal-mausoleum-in-agra.jpg?s=612x612&w=0&k=20&c=vcIjhwUrNyjoKbGbAQ5sOcEzDUgOfCsm9ySmJ8gNeRk=",
-      jobTitle: "Labor for goods shifting",
-      jobLocation: "UET peshawar",
-      jobDescription:
-        "Looking for someone strong and ready to help move stuff from point A to point B. If you've got the muscles, we've got the gig",
-    },
-    {
-      jobImage:
-        "https://media.istockphoto.com/id/1146517111/photo/taj-mahal-mausoleum-in-agra.jpg?s=612x612&w=0&k=20&c=vcIjhwUrNyjoKbGbAQ5sOcEzDUgOfCsm9ySmJ8gNeRk=",
-      jobTitle: "Labor for goods shifting",
-      jobLocation: "UET peshawar",
-      jobDescription:
-        "Looking for someone strong and ready to help move stuff from point A to point B. If you've got the muscles, we've got the gig",
-    },
-    {
-      jobImage:
-        "https://static01.nyt.com/images/2020/09/27/world/27virus-children-takeaways/merlin_177528975_1c858c60-dc49-4a7b-b44b-5264d1ffbaf8-articleLarge.jpg?quality=75&auto=webp&disable=upscale",
-      jobTitle: "Labor for goods shifting",
-      jobLocation: "UET peshawar",
-      jobDescription:
-        "Looking for someone strong and ready to help move stuff from point A to point B. If you've got the muscles, we've got the gig",
-    },
-    {
-      jobImage:
-        "https://media.istockphoto.com/id/1146517111/photo/taj-mahal-mausoleum-in-agra.jpg?s=612x612&w=0&k=20&c=vcIjhwUrNyjoKbGbAQ5sOcEzDUgOfCsm9ySmJ8gNeRk=",
-      jobTitle: "Labor for goods shifting",
-      jobLocation: "UET peshawar",
-      jobDescription:
-        "Looking for someone strong and ready to help move stuff from point A to point B. If you've got the muscles, we've got the gig",
-    },
-    {
-      jobImage:
-        "https://media.istockphoto.com/id/1146517111/photo/taj-mahal-mausoleum-in-agra.jpg?s=612x612&w=0&k=20&c=vcIjhwUrNyjoKbGbAQ5sOcEzDUgOfCsm9ySmJ8gNeRk=",
-      jobTitle: "Labor for goods shifting",
-      jobLocation: "UET peshawar",
-      jobDescription:
-        "Looking for someone strong and ready to help move stuff from point A to point B. If you've got the muscles, we've got the gig",
-    },
-  ];
+  const dispatch = useDispatch();
+  const { jobs, loading, error } = useSelector((state) => state.jobs);
+
+  useEffect(() => {
+    dispatch(fetchJobs());
+  }, [dispatch]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  console.log("jobs", jobs);
 
   return (
     <div className="w-full h-screen bg-slate-200">
@@ -100,23 +68,40 @@ export default function Jobs() {
       </section>
 
       <section className="w-full py-2 px-2 overflow-auto h-screen">
-        <div className="w-full flex flex-col justify-center  sm:flex-row sm:justify-start sm:items-center flex-wrap">
-          {data.map((val, ind) => {
+      <div className="w-full flex flex-col justify-center sm:flex-row sm:justify-start sm:items-start flex-wrap">
+          {jobs.map((val, ind) => {
             return (
               <div
-                className="relative  flex flex-col my-3 mx-3 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96 flex-wrap"
+                className="relative flex flex-col my-3 mx-3 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96 h-96 overflow-hidden"
                 key={ind}
               >
-                <div className="relative  mx-4 mt-2 overflow-hidden text-white shadow-lg bg-clip-border rounded-xl bg-blue-gray-500 shadow-blue-gray-500/40">
-                  <img src={val.jobImage} alt="card-image" />
+                <div className="relative mx-4 mt-2 overflow-hidden text-white shadow-lg bg-clip-border rounded-xl bg-blue-gray-500 shadow-blue-gray-500/40 h-40">
+                  <img
+                    src={val.imageUrl}
+                    alt="card-image"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="p-3">
-                  <h5 className="block font-sans text-md antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
+                <div className="p-3 overflow-auto">
+                  <h2 className="block font-sans text-md antialiased font-bold leading-snug tracking-normal text-blue-gray-900">
+                    <span className="font-bold">Job Title: </span>
                     {val.jobTitle}
-                  </h5>
+                  </h2>
                   <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit">
-                    <span className="font-bold ">Location: </span>
-                    {val.jobLocation}
+                    <span className="font-bold">Job Duration: </span>
+                    {val.jobDuration}
+                  </p>
+                  <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit">
+                    <span className="font-bold">City: </span>
+                    {val.jobCity}
+                  </p>
+                  <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit">
+                    <span className="font-bold">Address: </span>
+                    {val.jobAddress}
+                  </p>
+                  <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit">
+                    <span className="font-bold">Employer: </span>
+                    {val.employerName}
                   </p>
                   <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit">
                     <span className="font-bold">Description: </span>

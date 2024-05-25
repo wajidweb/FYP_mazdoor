@@ -61,6 +61,24 @@ export const setJob = createAsyncThunk(
     }
   );
 
+  export const fetchJobs = createAsyncThunk(
+    'jobs/fetchAll',
+    async (_, thunkAPI) => {
+      try {
+        const jobsRef = collection(db, 'jobs');
+        const querySnapshot = await getDocs(jobsRef);
+        
+        const jobs = [];
+        querySnapshot.forEach((doc) => {
+          jobs.push({ id: doc.id, ...doc.data() });
+        });
+  
+        return jobs;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
+      }
+    }
+  );
 
 
 const jobsSlice = createSlice({
@@ -94,6 +112,18 @@ const jobsSlice = createSlice({
         state.jobs = action.payload;
       })
       .addCase(fetchJobsByEmployerId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchJobs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchJobs.fulfilled, (state, action) => {
+        state.jobs = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchJobs.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
