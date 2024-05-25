@@ -32,7 +32,7 @@ export default function EmployerDashboard() {
         return <EmployerProfile user={user} employer={employer} />;
 
       case employerSidebarData[1].text:
-        return <Dashboard />;
+        return <Dashboard employer={employer} />;
       case employerSidebarData[2].text:
         if (jobPage) {
           return <Jobs setJobPage={setJobPage} />;

@@ -1,6 +1,7 @@
 import { React, useState } from "react";
 
-export default function Dashboard() {
+export default function Dashboard({employer}) {
+  console.log("emp", employer)
   return (
     <div className="w-full bg-white">
       <div className="bg-gray-50 dark:bg-gray-700 px-5 py-5">
@@ -20,35 +21,28 @@ export default function Dashboard() {
                 <div className="w-full flex flex-col justify-center items-center sm:flex-row sm:justify-around sm:items-center">
                   <img
                     className="w-24 h-24 mb-3 rounded-full shadow-lg"
-                    src="https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg"
-                    alt="Bonnie image"
+                    src={employer.imageUrl ? employer?.imageUrl : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
+                    alt="profile image"
                   />
                   <div className="flex flex-col justify-center items-start">
                     <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-                      Wajid Ali Khan
+                      Name: {employer?.name}
                     </h5>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Company Name
+                      Company Name: {employer?.companyName}
                     </span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Contact number
+                      Mobile number: {employer?.contactNumber}
                     </span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      City
+                      City: {employer?.city}
                     </span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Address
+                      Address: {employer?.address}
                     </span>
                   </div>
                 </div>
-                <div className="flex mt-2 md:mt-4">
-                  <a
-                    href="#"
-                    className="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                  >
-                    Want to Update Profile?
-                  </a>
-                </div>
+               
               </div>
             </div>
           </div>
