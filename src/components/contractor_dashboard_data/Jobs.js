@@ -12,7 +12,7 @@ export default function Jobs() {
   );
   const contractorId = useSelector((state) => state.auth.user.contractorId);
   const [applyingJobId, setApplyingJobId] = useState(null);
-
+  const [searchQuery, setSearchQuery] = useState("");
   console.log("contractorId", contractorId);
   useEffect(() => {
     dispatch(fetchJobs());
@@ -56,11 +56,15 @@ export default function Jobs() {
     );
   }
 
+  const filteredJobs = jobs.filter((job) =>
+    job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="w-full h-screen bg-slate-200">
       <section className="w-full flex justify-center items-center py-7 bg-slate-700">
         <div className="w-11/12">
-          <form className="max-w-md mx-auto">
+        <form className="max-w-md mx-auto">
             <label
               htmlFor="default-search"
               className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
@@ -88,16 +92,13 @@ export default function Jobs() {
               <input
                 type="search"
                 id="default-search"
-                className="block w-full p-4 ps-10 text-sm text-gray-900   rounded-lg bg-gray-50 focus:ring-blue-500  dark:bg-slate-300 dark:placeholder-black dark:text-black "
+                className="block w-full p-4 ps-10 text-sm text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-slate-300 dark:placeholder-black dark:text-black"
                 placeholder="Search job ..."
                 required=""
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button
-                type="submit"
-                className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Search
-              </button>
+             
             </div>
           </form>
         </div>
@@ -105,7 +106,8 @@ export default function Jobs() {
 
       <section className="w-full py-2 px-2 overflow-auto h-screen">
         <div className="w-full flex flex-col justify-center sm:flex-row sm:justify-start sm:items-start flex-wrap">
-          {jobs.map((val, ind) => {
+          {filteredJobs.length == 0 ? "Job not available!": (
+          filteredJobs.map((val, ind) => {
             return (
               <div
                 className="relative flex flex-col my-3 mx-3 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96 h-96 overflow-hidden"
@@ -155,7 +157,9 @@ export default function Jobs() {
                 </div>
               </div>
             );
-          })}
+          })
+          )
+          }
         </div>
       </section>
     </div>

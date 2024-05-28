@@ -115,7 +115,8 @@ export default function Jobs() {
 
       <section className="w-full py-2 px-2 overflow-auto h-screen">
         <div className="w-full flex flex-col justify-center sm:flex-row sm:justify-start sm:items-start flex-wrap">
-          {filteredJobs.map((val, ind) => {
+        {filteredJobs.length == 0 ? "Job not available!": (
+          filteredJobs.map((val, ind) => {
             return (
               <div
                 className="relative flex flex-col my-3 mx-3 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96 h-96 overflow-hidden"
@@ -165,7 +166,9 @@ export default function Jobs() {
                 </div>
               </div>
             );
-          })}
+          })
+          )
+          }
         </div>
       </section>
     </div>

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 import { db , storage} from "../../services/firebase"; // Adjust the path according to your project structure
-import { setDoc,getDoc, doc, collection, where , query, getDocs } from "firebase/firestore";
+import { setDoc,getDoc, doc, collection, where , query, getDocs, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
@@ -258,6 +258,24 @@ export const setJob = createAsyncThunk(
   );
 
 
+  export const deleteJob = createAsyncThunk(
+    'jobs/deleteJob',
+    async ({ employerId, jobId }, { rejectWithValue }) => {
+      try {
+        // Reference to the specific job document
+        const jobDocRef = doc(db, 'jobs', jobId);
+  
+        // Delete the job document
+        await deleteDoc(jobDocRef);
+  
+        return { jobId };
+      } catch (error) {
+        return rejectWithValue(error.message);
+      }
+    }
+  );
+
+
 
 const jobsSlice = createSlice({
   name: "jobs",
@@ -364,6 +382,17 @@ const jobsSlice = createSlice({
         state.jobsWithLaborDetails = action.payload;
       })
       .addCase(fetchJobsWithLaborDetailsByEmployerId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteJob.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteJob.fulfilled, (state, action) => {
+        state.loading = false;
+        state.jobs = state.jobs.filter((job) => job.id !== action.payload.jobId);
+      })
+      .addCase(deleteJob.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

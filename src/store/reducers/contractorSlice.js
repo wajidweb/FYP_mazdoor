@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../services/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, getDocs } from "firebase/firestore";
 
 export const fetchContractorById = createAsyncThunk(
   "contractor/fetchById",
@@ -41,12 +41,72 @@ export const setContractor = createAsyncThunk(
   }
 );
 
+
+export const addLaborToContractor = createAsyncThunk(
+  'contractors/addLaborToContractor',
+  async ({ contractorId, laborId }, { rejectWithValue }) => {
+    try {
+      const laborDocRef = doc(db, 'mazdoors', laborId);
+      const laborDoc = await getDoc(laborDocRef);
+
+      if (!laborDoc.exists()) {
+        throw new Error('Labor not found');
+      }
+
+      const laborData = laborDoc.data();
+
+      const contractorLaborsCollectionRef = collection(db, 'contractors', contractorId, 'mazdoors');
+      const laborDocInContractorRef = doc(contractorLaborsCollectionRef, laborId);
+
+      await setDoc(laborDocInContractorRef, laborData);
+
+      return laborData;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+export const fetchMazdoorsByContractorId = createAsyncThunk(
+  'contractor/fetchMazdoorsByContractorId',
+  async (contractorId, { rejectWithValue }) => {
+    try {
+      // Reference the subcollection 'mazdoors' under the specified Contractor
+      const contractorMazdoorsCollectionRef = collection(db, 'contractors', contractorId, 'mazdoors');
+
+      // Query to get all documents from the 'mazdoors' subcollection for the specific Contractor
+      const q = query(contractorMazdoorsCollectionRef);
+
+      // Fetch the documents
+      const querySnapshot = await getDocs(q);
+
+      // Array to hold the fetched Mazdoors data
+      const mazdoorsData = [];
+
+      // Iterate through the documents and extract the data
+      querySnapshot.forEach((doc) => {
+        // Push the data of each document to the mazdoorsData array
+        mazdoorsData.push({ id: doc.id, ...doc.data() });
+      });
+
+      // Return the fetched Mazdoors data
+      return mazdoorsData;
+    } catch (error) {
+      // If an error occurs, reject the promise with the error message
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
 const contractorSlice = createSlice({
   name: "contractor",
   initialState: {
     contractor: null,
     loading: false,
     error: null,
+    mazdoors: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -72,6 +132,36 @@ const contractorSlice = createSlice({
         state.contractor = action.payload;
       })
       .addCase(setContractor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addLaborToContractor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addLaborToContractor.fulfilled, (state, action) => {
+        state.loading = false;
+        if (!state.contractor) {
+          state.contractor = { labors: [] };
+        }
+        if (!Array.isArray(state.contractor.labors)) {
+          state.contractor.labors = [];
+        }
+        state.contractor.labors.push(action.payload);
+      })
+      .addCase(addLaborToContractor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchMazdoorsByContractorId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMazdoorsByContractorId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.mazdoors = action.payload; // Set fetched Mazdoors data to the state
+      })
+      .addCase(fetchMazdoorsByContractorId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

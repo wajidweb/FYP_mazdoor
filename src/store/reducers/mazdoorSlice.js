@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../services/firebase";
-import { doc, getDoc , setDoc } from "firebase/firestore";
+import { doc, getDoc , setDoc , collection, getDocs} from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 
 export const fetchMazdoorById = createAsyncThunk(
@@ -41,6 +41,35 @@ export const setMazdoor = createAsyncThunk(
       }
     }
   );
+
+  export const fetchAllMazdoors = createAsyncThunk(
+    'mazdoors/fetchAllMazdoors',
+    async (_, { rejectWithValue }) => {
+      try {
+        // Reference the 'mazdoors' collection
+        const mazdoorsCollectionRef = collection(db, 'mazdoors');
+  
+        // Fetch all documents from the 'mazdoors' collection
+        const querySnapshot = await getDocs(mazdoorsCollectionRef);
+  
+        // Array to hold the fetched Mazdoors data
+        const mazdoorsData = [];
+  
+        // Iterate through the documents and extract the data
+        querySnapshot.forEach((doc) => {
+          // Push the data of each document to the mazdoorsData array
+          mazdoorsData.push({ id: doc.id, ...doc.data() });
+        });
+  
+        // Return the fetched Mazdoors data
+        return mazdoorsData;
+      } catch (error) {
+        // If an error occurs, reject the promise with the error message
+        return rejectWithValue(error.message);
+      }
+    }
+  );
+
   
 
 const mazdoorSlice = createSlice({
@@ -49,6 +78,7 @@ const mazdoorSlice = createSlice({
     mazdoor: null,
     loading: false,
     error: null,
+    mazdoors : []
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -74,6 +104,18 @@ const mazdoorSlice = createSlice({
         state.mazdoor = action.payload;
       })
       .addCase(setMazdoor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchAllMazdoors.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllMazdoors.fulfilled, (state, action) => {
+        state.loading = false;
+        state.mazdoors = action.payload; // Set fetched Mazdoors data to the state
+      })
+      .addCase(fetchAllMazdoors.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
