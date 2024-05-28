@@ -1,7 +1,55 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
+import { fetchJobsWithLaborDetailsByEmployerId } from "../../store/reducers/jobSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-export default function Dashboard({employer}) {
-  console.log("emp", employer)
+export default function Dashboard({ employer }) {
+  const employerId = employer?.employerId;
+  const dispatch = useDispatch();
+  const { jobsWithLaborDetails, loading, error } = useSelector(
+    (state) => state.jobs
+  );
+
+  useEffect(() => {
+    dispatch(fetchJobsWithLaborDetailsByEmployerId(employerId));
+  }, [dispatch, employerId]);
+
+  console.log("emp", jobsWithLaborDetails);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center w-full h-full ">
+        <button
+          disabled=""
+          type="button"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            role="status"
+            className="inline w-4 h-4 me-3 text-white animate-spin"
+            viewBox="0 0 100 101"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB"
+            />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor"
+            />
+          </svg>
+          Loading...
+        </button>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="w-full bg-white">
       <div className="bg-gray-50 dark:bg-gray-700 px-5 py-5">
@@ -9,168 +57,57 @@ export default function Dashboard({employer}) {
       </div>
 
       <section className="w-full py-3 px-3">
-        <div className="w-full py-1">
-          <p className="text-2xl text-black font-bold">Overview</p>
-       
-        </div>
-
-        <div className="flex flex-wrap">
-          <div className="w-full md:w-1/2 p-4">
-            <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg  dark:bg-gray-600 dark:border-gray-700 px-4 py-4">
-              <div className="flex flex-col items-center">
-                <div className="w-full flex flex-col justify-center items-center sm:flex-row sm:justify-around sm:items-center">
-                  <img
-                    className="w-24 h-24 mb-3 rounded-full shadow-lg"
-                    src={employer.imageUrl ? employer?.imageUrl : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
-                    alt="profile image"
-                  />
-                  <div className="flex flex-col justify-center items-start">
-                    <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-                      Name: {employer?.name}
-                    </h5>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Company Name: {employer?.companyName}
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Mobile number: {employer?.contactNumber}
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      City: {employer?.city}
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Address: {employer?.address}
-                    </span>
-                  </div>
-                </div>
-               
-              </div>
-            </div>
-          </div>
-          <div className="w-full md:w-1/2 p-4">
-            <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-600 dark:border-gray-700">
-              <div className="py-2 px-1">
-                <a
-                  href="#"
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  See Latest Jobs
-                  <svg
-                    className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 14 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M1 5h12m0 0L9 1m4 4L9 9"
-                    />
-                  </svg>
-                </a>
-              </div>
-              <div className="py-2 px-1">
-                <a
-                  href="#"
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  See Jobs whome you applied!
-                  <svg
-                    className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 14 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M1 5h12m0 0L9 1m4 4L9 9"
-                    />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full">
-          <div className="w-full py-2">
-            <p className="text-xl font-bold text-black">
-            Job Applicants Hub
-            </p>
-          </div>
-          <div className="w-full">
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div className="w-full">
+          <div className="overflow-x-auto">
+            <h1 className="text-2xl font-bold mb-4">Jobs with Labor Details</h1>
+            {jobsWithLaborDetails.length === 0 ? (
+              <p>No applications found</p>
+            ) : (
+              <table className="min-w-full bg-white">
+                <thead>
                   <tr>
-                    <th scope="col" className="px-6 py-3">
-                      Job Title
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Job Date
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Mazdoor Name
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                    Address
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Status
-                    </th>
+                    <th className="py-2  border-b">Job Title</th>
+                    <th className="py-2 border-b">Mazdoor Name</th>
+                    <th className="py-2 border-b">Profession</th>
+                    <th className="py-2 border-b">CNIC</th>
+                    <th className="py-2 border-b">Mobile Number</th>
+                    <th className="py-2 border-b">City</th>
+                    <th className="py-2 border-b">Address</th>
+                    <th className="py-2 border-b">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    >
-                      Kitchen Repair
-                    </th>
-                    <td className="px-6 py-4">21 march 2024</td>
-                    <td className="px-6 py-4">Shah Fahad</td>
-                    <td className="px-6 py-4">UET Peshawar</td>
-                    <td className="px-6 py-4">Accept</td>
-                    
-                  </tr>
-                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    >
-                      Kitchen Repair
-                    </th>
-                    <td className="px-6 py-4">21 march 2024</td>
-                    <td className="px-6 py-4">Shah Fahad</td>
-                    <td className="px-6 py-4">UET Peshawar</td>
-                    <td className="px-6 py-4">Accept</td>
-                    
-                  </tr>
-                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    >
-                      Kitchen Repair
-                    </th>
-                    <td className="px-6 py-4">21 march 2024</td>
-                    <td className="px-6 py-4">Shah Fahad</td>
-                    <td className="px-6 py-4">UET Peshawar</td>
-                    <td className="px-6 py-4">Accept</td>
-                    
-                  </tr>
-                 
-                 
+                  {jobsWithLaborDetails.map((job) => (
+                    <tr key={job.jobId}>
+                      <td className="py-2 px-5 border-b">{job.jobTitle}</td>
+                      <td className="py-2 px-5 border-b">
+                        {job?.laborData?.name || job?.contractorData?.name}
+                      </td>
+                     
+                      <td className="py-2 px-5 border-b">
+                        {job?.laborData?.profession  || job?.contractorData?.userType}
+                      </td>
+                     
+                      <td className="py-2 px-5 border-b">
+                        {job?.laborData?.cnic  || job?.contractorData?.cnic}
+                      </td>
+                      <td className="py-2 px-5 border-b">
+                        {job?.laborData?.contactNumber  || job?.contractorData?.contactNumber}
+                      </td>
+                      <td className="py-2 px-5 border-b">
+                        {job?.laborData?.city  || job?.contractorData?.city}
+                      </td>
+                      <td className="py-2 px-5 border-b">
+                        {job?.laborData?.address  || job?.contractorData?.address}
+                      </td>
+                      <td className="py-2 px-5 border-b">
+                        accept
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-            </div>
+            )}
           </div>
         </div>
       </section>

@@ -8,6 +8,7 @@ import CreateNewJob from "../components/employer_dashboard_data/CreateNewJob";
 import ContractorProfile from "../components/contractor_dashboard_data/ContractorProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContractorById } from "../store/reducers/contractorSlice";
+import AppliedJobs from "../components/contractor_dashboard_data/AppliedJobs";
 
 
 export default function ContractorDashboard() {
@@ -37,8 +38,10 @@ export default function ContractorDashboard() {
         return <Dashboard />;
       case contractorSidebarData[2].text:
         return <Jobs  />;
-
       case contractorSidebarData[3].text:
+        return <AppliedJobs  />;
+
+      case contractorSidebarData[4].text:
         return <ChatHubContractor />;
 
       default:

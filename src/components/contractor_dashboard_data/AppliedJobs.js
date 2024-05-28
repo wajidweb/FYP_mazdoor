@@ -1,31 +1,17 @@
-import { React, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchJobs, applyJob } from "../../store/reducers/jobSlice";
+import { fetchAppliedJobsByContractorId } from "../../store/reducers/jobSlice";
 
-export default function Jobs() {
+export default function AppliedJobs() {
   const dispatch = useDispatch();
-  const { jobs, loading, error, applying, applicationError } = useSelector(
-    (state) => state.jobs
-  );
-  const laborId = useSelector((state) => state.auth.user.laborId);
-  const [applyingJobId, setApplyingJobId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { jobs, loading, error } = useSelector((state) => state.jobs);
+  const contractorId = useSelector((state) => state.auth.user.contractorId); // Assuming contractorId is stored in auth state
 
-
-  console.log("laborId", laborId);
   useEffect(() => {
-    dispatch(fetchJobs());
-  }, [dispatch]);
-
-  const handleApply = async (jobId) => {
-    setApplyingJobId(jobId); // Set the applying job ID to the clicked job
-    await dispatch(applyJob({ jobId, laborId }));
-    setApplyingJobId(null);
-  };
-
-  const filteredJobs = jobs.filter((job) =>
-    job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    if (contractorId) {
+      dispatch(fetchAppliedJobsByContractorId(contractorId));
+    }
+  }, [contractorId, dispatch]);
 
   if (loading) {
     return (
@@ -58,67 +44,21 @@ export default function Jobs() {
     );
   }
 
-
   if (error) {
     return <div>Error: {error}</div>;
   }
-
-  if (applicationError) {
-    return <div>Error: {applicationError}</div>;
-  }
-
-  console.log("jobs", jobs);
-
   return (
-    <div className="w-full h-screen bg-slate-200">
-      <section className="w-full flex justify-center items-center py-7 bg-slate-700">
-        <div className="w-11/12">
-          <form className="max-w-md mx-auto">
-            <label
-              htmlFor="default-search"
-              className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-            >
-              Search
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
-              <input
-                type="search"
-                id="default-search"
-                className="block w-full p-4 ps-10 text-sm text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-slate-300 dark:placeholder-black dark:text-black"
-                placeholder="Search job ..."
-                required=""
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-             
-            </div>
-          </form>
-        </div>
-      </section>
+    <div className="w-full bg-white">
+      <div className="bg-gray-50 dark:bg-gray-700 px-5 py-5">
+        <p className="text-white">Applied Jobs</p>
+      </div>
 
       <section className="w-full py-2 px-2 overflow-auto h-screen">
         <div className="w-full flex flex-col justify-center sm:flex-row sm:justify-start sm:items-start flex-wrap">
-          {filteredJobs.map((val, ind) => {
+          {jobs.map((val, ind) => {
             return (
               <div
-                className="relative flex flex-col my-3 mx-3 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96 h-96 overflow-hidden"
+                className="relative flex flex-col my-3 mx-3 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96 h-96 overflow-hidden border border-red-700"
                 key={ind}
               >
                 <div className="relative mx-4 mt-2 overflow-hidden text-white shadow-lg bg-clip-border rounded-xl bg-blue-gray-500 shadow-blue-gray-500/40 h-40">
@@ -153,15 +93,6 @@ export default function Jobs() {
                     <span className="font-bold">Description: </span>
                     {val.jobDescription}
                   </p>
-                </div>
-                <div className="w-full flex justify-end items-end py-3 px-3">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleApply(val.id)}
-                    disabled={applyingJobId === val.id} // Disable button only for the currently applying job
-                  >
-                    {applyingJobId === val.id ? "Applying..." : "Apply"}
-                  </button>
                 </div>
               </div>
             );
