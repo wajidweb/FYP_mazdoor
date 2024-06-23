@@ -8,6 +8,7 @@ import ChatHubMazdoor from "../components/mazdoor_dashboard_data/ChatHubMazdoor"
 import mazdoorSidebarData from "../components/utils/mazdoorSidebarData";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMazdoorById } from '../store/reducers/mazdoorSlice';
+import ChatRoom from "../components/mazdoor_dashboard_data/ChatRoom";
 
 
 
@@ -42,7 +43,8 @@ export default function MazdoorDashboard() {
       case mazdoorSidebarData[3].text:
         return <AppliedJobs />;
       case mazdoorSidebarData[4].text:
-        return <ChatHubMazdoor />;
+        // return <ChatHubMazdoor />;
+        return <ChatRoom user={user} mazdoor={mazdoor} />;
 
       default:
         return <MazdoorProfile user={user} mazdoor={mazdoor}  />;
