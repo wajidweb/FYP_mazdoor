@@ -9,7 +9,7 @@ import ContractorProfile from "../components/contractor_dashboard_data/Contracto
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContractorById } from "../store/reducers/contractorSlice";
 import AppliedJobs from "../components/contractor_dashboard_data/AppliedJobs";
-
+import ChatRoom from "../components/contractor_dashboard_data/ChatRoom";
 
 export default function ContractorDashboard() {
   const dispatch = useDispatch();
@@ -42,8 +42,8 @@ export default function ContractorDashboard() {
         return <AppliedJobs  />;
 
       case contractorSidebarData[4].text:
-        return <ChatHubContractor />;
-
+        // return <ChatHubContractor />;
+        return <ChatRoom user={user} mazdoor={contractor} />;
       default:
         return <ContractorProfile  user={user} contractor={contractor} />;
     }

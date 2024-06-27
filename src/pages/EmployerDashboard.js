@@ -8,6 +8,7 @@ import EmployerProfile from "../components/employer_dashboard_data/EmployerProfi
 import CreateNewJob from "../components/employer_dashboard_data/CreateNewJob";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEmployerById } from "../store/reducers/employerSlice";
+import ChatRoom from "../components/employer_dashboard_data/ChatRoom";
 
 export default function EmployerDashboard() {
   const [isOpen, setIsOpen] = useState(true);
@@ -32,7 +33,7 @@ export default function EmployerDashboard() {
         return <EmployerProfile user={user} employer={employer} />;
 
       case employerSidebarData[1].text:
-        return <Dashboard employer={employer} />;
+        return <Dashboard employer={employer} setSelectedOption={setSelectedOption} />;
       case employerSidebarData[2].text:
         if (jobPage) {
           return <Jobs setJobPage={setJobPage} />;
@@ -41,8 +42,8 @@ export default function EmployerDashboard() {
         }
 
       case employerSidebarData[3].text:
-        return <ChatHubMazdoor />;
-
+        // return <ChatHubMazdoor />;
+        return <ChatRoom user={user} mazdoor={employer} />;
       default:
         return <EmployerProfile user={user} employer={employer} />;
     }

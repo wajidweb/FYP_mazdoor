@@ -1,8 +1,11 @@
 import { React, useState, useEffect } from "react";
 import { fetchJobsWithLaborDetailsByEmployerId } from "../../store/reducers/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import employerSidebarData from '../utils/employerSidebarData';
 
-export default function Dashboard({ employer }) {
+export default function Dashboard({ employer, setSelectedOption }) {
+  const navigate = useNavigate();
   const employerId = employer?.employerId;
   const dispatch = useDispatch();
   const { jobsWithLaborDetails, loading, error } = useSelector(
@@ -50,6 +53,11 @@ export default function Dashboard({ employer }) {
     return <div>Error: {error}</div>;
   }
 
+  console.log("jobdetail>>>>", jobsWithLaborDetails);
+  const startChating = (job)=>{
+    setSelectedOption("Chat Hub");
+  }
+
   return (
     <div className="w-full bg-white">
       <div className="bg-gray-50 dark:bg-gray-700 px-5 py-5">
@@ -78,7 +86,7 @@ export default function Dashboard({ employer }) {
                 </thead>
                 <tbody>
                   {jobsWithLaborDetails.map((job) => (
-                    <tr key={job.jobId}>
+                    <tr key={job.jobId} onClick={()=> startChating(job)} className="cursor-pointer">
                       <td className="py-2 px-5 border-b">{job.jobTitle}</td>
                       <td className="py-2 px-5 border-b">
                         {job?.laborData?.name || job?.contractorData?.name}
@@ -100,7 +108,7 @@ export default function Dashboard({ employer }) {
                       <td className="py-2 px-5 border-b">
                         {job?.laborData?.address  || job?.contractorData?.address}
                       </td>
-                      <td className="py-2 px-5 border-b">
+                      <td className="py-2 px-5 border-b" >
                         accept
                       </td>
                     </tr>
