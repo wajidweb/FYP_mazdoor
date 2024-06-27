@@ -2,7 +2,7 @@ import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setMazdoor } from "../../store/reducers/mazdoorSlice";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
+import { getAuth } from "firebase/auth";
 export default function MazdoorProfile({ user, mazdoor }) {
   const [profileImage, setProfileImage] = useState(null);
   const labor = useSelector((state) => state.mazdoor.mazdoor);
@@ -41,12 +41,26 @@ export default function MazdoorProfile({ user, mazdoor }) {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const storage = getStorage();
-      const storageRef = ref(storage, `mazdoor_images/${user.laborId}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      setFormData((prevData) => ({ ...prevData, imageUrl: url }));
-      setProfileImage(url);
+      const auth = getAuth();
+      const user = auth.currentUser;
+  
+      if (user) {
+        const userId = user.uid; // Use the user's UID for the directory
+        const imageId = file.name; // Assuming file name as image ID, adjust if necessary
+        const storage = getStorage();
+        const storageRef = ref(storage, `mazdoor_images/${userId}/${imageId}`);
+        
+        try {
+          await uploadBytes(storageRef, file);
+          const url = await getDownloadURL(storageRef);
+          setFormData((prevData) => ({ ...prevData, imageUrl: url }));
+          setProfileImage(url);
+        } catch (error) {
+          console.error('Error uploading image:', error);
+        }
+      } else {
+        console.error('User is not authenticated');
+      }
     }
   };
 
